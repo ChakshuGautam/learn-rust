@@ -3,3 +3,6 @@ tasks:
     init: |
       curl https://sh.rustup.rs -sSf | sh -s -- -y
       source "/workspace/.cargo/env"
+      rustc --version
+      rustup update
+      rustc --version

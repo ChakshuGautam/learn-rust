@@ -1,5 +1,11 @@
 {
-	"recommendations": [
-		"rust-analyzer"
-	]
+	"files.autoSave": "afterDelay",
+	"editor.inlayHints.enabled": "on",
+	"editor.semanticTokenColorCustomizations": {
+		"rules": {
+		  "*.mutable": {
+			"fontStyle": "", // set to empty string to disable underline, which is the default
+		  },
+		}
+	  },
 }
