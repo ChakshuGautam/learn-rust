@@ -4,6 +4,7 @@ extern crate num_traits;
 use std::fs::File;
 use std::io::{Write, BufWriter};
 use std::time::Instant;
+use std::mem::replace;
 
 
 use num_bigint::BigUint;
@@ -49,37 +50,56 @@ fn fibonacci(n: u64) -> BigUint {
     result.0 .1 // The Fibonacci number is at position (0, 1) in the resulting matrix
 }
 
+// Function to compute the nth Fibonacci number using the iterative method
+fn fibonacci_iterative(n: u64) -> BigUint {
+    if n == 0 {
+        return Zero::zero();
+    }
+    if n == 1 {
+        return One::one();
+    }
+
+    let mut a: BigUint = Zero::zero();
+    let mut b: BigUint = One::one();
+    let mut c: BigUint;
+
+    for _ in 2..=n {
+        c = &a + &b;
+        a = replace(&mut b, c);
+    }
+
+    b
+}
+
 fn main() {
-    // let n = 1_000_000; // Calculate the 1000th Fibonacci number
-
-    // let start = Instant::now(); // Start timing
-    // let fib_number = fibonacci(n+1);
-    // let duration = start.elapsed(); // End timing
-
-    // println!("Fibonacci number F{} is {}", n, fib_number);
-    // let mut file = File::create("fibonacci_result.txt").expect("Could not create file");
-    // writeln!(file, "Fibonacci number F{} is {}", n, fib_number).expect("Could not write to file");
-
     // Array of numbers for which to calculate Fibonacci numbers
-    let numbers = vec![10, 100, 500, 1000, 5000, 10_000, 50_000, 100_000, 500_000, 1_000_000, 5_000_000]; 
-    println!("{:<10} {:<30}", "F(n)", "Time Taken (µs)");
+    let numbers = vec![10, 100, 500, 1000, 5000, 10_000, 50_000, 100_000, 500_000]; 
+    println!("{:<10} {:<20} {:<30}", "F(n)", "Time Taken Matrix (µs)", "Time Taken Iterative (µs)");
 
-    let _file_name = "fibonacci_numbers.csv";
-    let mut file = BufWriter::new(File::create(_file_name).expect("Could not create file"));
+    let file_name = "fibonacci_numbers.csv";
+    let mut file = BufWriter::new(File::create(file_name).expect("Could not create file"));
 
     // Write the CSV headers
-    writeln!(file, "n,Fibonacci Number,Time Taken (µs)").expect("Could not write to file");
+    writeln!(file, "n,Time Taken Matrix (µs),Time Taken Iterative (µs)").expect("Could not write to file");
     
     for &n in &numbers {
-        let start = Instant::now(); // Start timing
-        let fib_number = fibonacci(n);
-        let duration = start.elapsed(); // End timing
+        // Time the matrix method
+        let start_matrix = Instant::now();
+        let _fib_number_matrix = fibonacci(n+1);
+        let duration_matrix = start_matrix.elapsed();
+
+        // Time the iterative method
+        let start_iterative = Instant::now();
+        let _fib_number_iterative = fibonacci_iterative(n);
+        let duration_iterative = start_iterative.elapsed();
+
+        assert_eq!(_fib_number_matrix, _fib_number_iterative, "The numbers are not equal");
+
+        // Write the time taken by both methods to the CSV file
+        writeln!(file, "{},{},{}", n, duration_matrix.as_micros(), duration_iterative.as_micros()).expect("Could not write to file");
         
-        // Write the Fibonacci number and the time taken to the CSV file
-        writeln!(file, "{},{},{}", n, fib_number, duration.as_micros()).expect("Could not write to file");
-        
-        // Print the result in a table format
-        println!("{:<10} {:<30}", n, duration.as_micros());
+        // Print the results in a table format
+        println!("{:<10} {:<20}   {:<30}", n, duration_matrix.as_micros(), duration_iterative.as_micros());
     }
 
     // Ensure all data is flushed to the file
@@ -88,16 +108,15 @@ fn main() {
 
 // u128 - 340282366920938463463374607431768211455
 
-/* F(n)       Time Taken (µs)               
-10         47                            
-100        34                            
-500        74                            
-1000       112                           
-5000       644                           
-10000      1772                          
-50000      19054                         
-100000     54917                         
-500000     541974                        
-1000000    1542715                       
-5000000    25179289  
+/* 
+F(n)       Time Taken Matrix (µs) Time Taken Iterative (µs)     
+10         45                     2                             
+100        32                     23                            
+500        72                     131                           
+1000       112                    298                           
+5000       615                    2695                          
+10000      1780                   8145                          
+50000      19085                  142166                        
+100000     55499                  536884                        
+500000     543486                 13128766 
 */
