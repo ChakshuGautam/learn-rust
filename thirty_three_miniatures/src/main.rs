@@ -2,10 +2,9 @@ extern crate num_bigint;
 extern crate num_traits;
 
 use std::fs::File;
-use std::io::{Write, BufWriter};
-use std::time::Instant;
+use std::io::{BufWriter, Write};
 use std::mem::replace;
-
+use std::time::Instant;
 
 use num_bigint::BigUint;
 use num_traits::{One, Zero};
@@ -73,19 +72,23 @@ fn fibonacci_iterative(n: u64) -> BigUint {
 
 fn main() {
     // Array of numbers for which to calculate Fibonacci numbers
-    let numbers = vec![10, 100, 500, 1000, 5000, 10_000, 50_000, 100_000, 500_000]; 
-    println!("{:<10} {:<20} {:<30}", "F(n)", "Time Taken Matrix (µs)", "Time Taken Iterative (µs)");
+    let numbers = vec![10, 100, 500, 1000, 5000, 10_000, 50_000, 100_000, 500_000];
+    println!(
+        "{:<10} {:<20} {:<30}",
+        "F(n)", "Time Taken Matrix (µs)", "Time Taken Iterative (µs)"
+    );
 
     let file_name = "fibonacci_numbers.csv";
     let mut file = BufWriter::new(File::create(file_name).expect("Could not create file"));
 
     // Write the CSV headers
-    writeln!(file, "n,Time Taken Matrix (µs),Time Taken Iterative (µs)").expect("Could not write to file");
-    
+    writeln!(file, "n,Time Taken Matrix (µs),Time Taken Iterative (µs)")
+        .expect("Could not write to file");
+
     for &n in &numbers {
         // Time the matrix method
         let start_matrix = Instant::now();
-        let _fib_number_matrix = fibonacci(n+1);
+        let _fib_number_matrix = fibonacci(n + 1);
         let duration_matrix = start_matrix.elapsed();
 
         // Time the iterative method
@@ -93,13 +96,28 @@ fn main() {
         let _fib_number_iterative = fibonacci_iterative(n);
         let duration_iterative = start_iterative.elapsed();
 
-        assert_eq!(_fib_number_matrix, _fib_number_iterative, "The numbers are not equal");
+        assert_eq!(
+            _fib_number_matrix, _fib_number_iterative,
+            "The numbers are not equal"
+        );
 
         // Write the time taken by both methods to the CSV file
-        writeln!(file, "{},{},{}", n, duration_matrix.as_micros(), duration_iterative.as_micros()).expect("Could not write to file");
-        
+        writeln!(
+            file,
+            "{},{},{}",
+            n,
+            duration_matrix.as_micros(),
+            duration_iterative.as_micros()
+        )
+        .expect("Could not write to file");
+
         // Print the results in a table format
-        println!("{:<10} {:<20}   {:<30}", n, duration_matrix.as_micros(), duration_iterative.as_micros());
+        println!(
+            "{:<10} {:<20}   {:<30}",
+            n,
+            duration_matrix.as_micros(),
+            duration_iterative.as_micros()
+        );
     }
 
     // Ensure all data is flushed to the file
@@ -108,15 +126,15 @@ fn main() {
 
 // u128 - 340282366920938463463374607431768211455
 
-/* 
-F(n)       Time Taken Matrix (µs) Time Taken Iterative (µs)     
-10         45                     2                             
-100        32                     23                            
-500        72                     131                           
-1000       112                    298                           
-5000       615                    2695                          
-10000      1780                   8145                          
-50000      19085                  142166                        
-100000     55499                  536884                        
-500000     543486                 13128766 
+/*
+F(n)       Time Taken Matrix (µs) Time Taken Iterative (µs)
+10         45                     2
+100        32                     23
+500        72                     131
+1000       112                    298
+5000       615                    2695
+10000      1780                   8145
+50000      19085                  142166
+100000     55499                  536884
+500000     543486                 13128766
 */
