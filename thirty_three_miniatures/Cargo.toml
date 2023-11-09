@@ -1,0 +1,6 @@
+[package]
+name = "thirty_three_miniatures"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
