@@ -6,3 +6,7 @@ edition = "2021"
 [dependencies]
 num-bigint = "0.4.0"
 num-traits = "0.2.14"
+
+[[bin]]
+name = "01"
+path = "src/miniatures/01/main.rs"

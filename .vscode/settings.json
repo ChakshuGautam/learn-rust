@@ -7,5 +7,8 @@
 			"fontStyle": "", // set to empty string to disable underline, which is the default
 		  },
 		}
-	  },
+	},
+	"rust-analyzer.linkedProjects": [
+		"./thirty_three_miniatures/Cargo.toml"
+	],
 }
